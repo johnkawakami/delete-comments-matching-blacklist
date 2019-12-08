@@ -17,3 +17,11 @@ Both tools also help you get through thousands of spammy posts.
 To use it, upload the directory into wp-content/plugins/ and then activate the plugin.
 
 Once you're done, deactivate the plugin.
+
+## References
+
+https://plugins.trac.wordpress.org/browser/delete-all-comments/trunk/delete-all-comments.php
+
+https://plugins.trac.wordpress.org/browser/batch-comment-spam-deletion/trunk/batch-comment-spam-deletion.php
+
+https://plugins.trac.wordpress.org/browser/comment-blacklist-updater/trunk/comment-blacklist-updater.php
