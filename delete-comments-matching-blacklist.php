@@ -1,11 +1,18 @@
 <?php
-/*
-Plugin Name: Delete Pending Comments that Match Blacklisted Words
-Description: Reads the blacklist, and deletes any pending comment matching the words.
-Author: John Kawakami
-*/
+/**
+ * Plugin Name: Delete Pending Comments that Match Blacklisted Words
+ * Description: Reads the blacklist, and deletes any pending comment matching the words. Moves spammy comments to spam.
+ * Author: John Kawakami
+ * Version: 0.1
+ * Requires at least: 5
+ * Requires PHP: 7.3
+ * License: GPL2
+ * License URI: https://www.gnu.org/licenses/gpl-2.0.html
+ */
 
-if( ! defined( 'ABSPATH' ) ) exit;
+if ( ! defined( 'ABSPATH' ) ) exit;
+
+if ( ! class_exists('DPCMBW') ) {
 
 class DPCMBW {
 
@@ -33,12 +40,10 @@ class DPCMBW {
 
 
     public static function delete_pending_matching( $word = null ) {
-        // delete from wp_2_comments WHERE comment_approved = '0' AND comment_content LIKE '% cbd oil %' OR comment_content LIKE 'cbd oil %' OR comment_content LIKE '% cbd oil' OR comment_content LIKE '%>cbd oil %' OR comment_content LIKE '% cbd oil<%' OR comment_content LIKE 'cbd oil\n'
-        // delete from wp_2_comments WHERE comment_approved = '0' AND comment_content LIKE '% buy cialis %' OR comment_content LIKE 'buy cialis %' OR comment_content LIKE '% buy cialis' OR comment_content LIKE '%>buy cialis %' OR comment_content LIKE '% buy cialis<%' OR comment_content LIKE '% buy cialis\n' OR comment_content LIKE '%>buy cialis\n' OR comment_content LIKE '%>buy cialis<%'
 
         global $wpdb;
 
-        if ($word===null) return;
+        if ($word===null or preg_match('/^\\s+$/', $word)) return;
 
         $query=$wpdb->prepare("DELETE FROM `{$wpdb->prefix}comments` WHERE `comment_approved` = '0' 
                             AND comment_content LIKE %s 
@@ -78,6 +83,7 @@ class DPCMBW {
         }
         $this->delete_evil_urls();
         echo "<div class='updated'><p>Completed deletion.</p></div>";
+        // fixme - load comment list here
     }
 
     /**
@@ -95,6 +101,7 @@ class DPCMBW {
         flush();
         $this->move_spam_peers_helper( 'comment_author_email' );
         echo "<div class='updated'><p>Completed moving spam.</p></div>";
+        // fixme - load the comment approval page
     }
 
     private function move_spam_peers_helper( $field ) {
@@ -105,7 +112,7 @@ class DPCMBW {
 
         foreach($names as $name) {
             if ($name == '') continue; // skip empties - most people leave URL fields empty
-            $query = $wpdb->prepare( "UPDATE `{$wpdb->prefix}comments` SET comment_approved='spam' WHERE $field=%s",
+            $query = $wpdb->prepare( "UPDATE `{$wpdb->prefix}comments` SET comment_approved='spam' WHERE comment_approved='0' AND $field=%s",
                 $name);
             $response = $wpdb->query( $query );
             if ($response) {
@@ -117,3 +124,4 @@ class DPCMBW {
 
 $dpcmbw = DPCMBW::getInstance();
 
+} // if ! class_exists
