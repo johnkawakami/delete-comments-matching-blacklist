@@ -38,7 +38,6 @@ class DPCMBW {
             'msp', array( $this, 'move_spam_peers') );
     }
 
-
     public static function delete_pending_matching( $word = null ) {
 
         global $wpdb;
@@ -83,7 +82,6 @@ class DPCMBW {
         }
         $this->delete_evil_urls();
         echo "<div class='updated'><p>Completed deletion.</p></div>";
-        // fixme - load comment list here
     }
 
     /**
@@ -101,7 +99,6 @@ class DPCMBW {
         flush();
         $this->move_spam_peers_helper( 'comment_author_email' );
         echo "<div class='updated'><p>Completed moving spam.</p></div>";
-        // fixme - load the comment approval page
     }
 
     private function move_spam_peers_helper( $field ) {
